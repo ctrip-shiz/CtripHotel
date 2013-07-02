@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
+</head>
+<body>
+  <h3>cQuery ext Test</h3>
+    
+	<div id="qunit"></div>
+	<div id="qunit-fixture">
+    
+    <div id="query">
+        <p>
+            <a href="#" class="lnk"></a> &nbsp;&nbsp;
+            <span></span> &nbsp;&nbsp;
+            <label></label> &nbsp;&nbsp;
+            <input type="radio" />
+        </p>
+    </div>
+    
+    <div id="manipulate">
+        <p></p> &nbsp;&nbsp;
+        <a></a> &nbsp;&nbsp;
+    </div>
+    
+    <div id="metrics" style="padding:0; margin:0; width: 1600px; height: 800px;">
+        <div style="width: 300px; height: 400px; padding:0; margin:0;"></div>
+        <p style="width:100%; height: 100%; padding:0; margin:0"></p>
+    </div>
+    
+    </div>
+    
+	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+	<script type="text/javascript" src="http://webresource.ctrip.com/code/cquery/cQuery_110421.js"></script>
+	<script type="text/javascript" src="../../src/lib/cQuery-ext.js"></script>
+    
+	<script>
+	console.log('actual, excepted, message');
+
+	test('cQuery element finding extension', function(){
+		
+        var div = $('#query'),
+            p   = div.find('p')[0],
+            lnk = div.find('a')[0],
+            spn = div.find('span')[0],
+            lbl = div.find('label')[0],
+            rdo = div.find('input')[0],
+            div = div[0];
+        
+		equal(S.prev(lbl), spn, 'S.prev(elem)');
+		equal(S.prev(lbl, '.lnk'), lnk, 'S.prev(elem, exp)');
+		
+        equal(S.next(spn), lbl, 'S.next(elem)');
+        equal(S.next(spn, 'input[type="radio"]'), rdo, 'S.next(elem, exp)');
+        
+		equal(S.firstChild(p), lnk, 'S.firstChild(elem)');
+        equal(S.lastChild(p), rdo, 'S.lastChild(elem)');
+        
+        equal(S.parent(spn), p, 'S.parent(elem)');
+        equal(S.parent(spn, 'div'), div, 'S.parent(elem, exp)');
+	});
+    
+    test('cQuery element manipulate extension', function(){
+		
+        var div = $('#manipulate'),
+            p   = div.find('p')[0],
+            lnk = div.find('a')[0],
+            div = div[0];
+            
+        var spn = S.create('<span class="spn"></span>'),
+           lbl = S.create('<label class="lbl"></label>');
+
+        equal(spn.nodeName, 'SPAN', 'S.create(html)');
+
+        S.insertBefore(spn, p);
+        equal(S.prev(p), spn, 'S.insertBefore(a, b)');
+
+        S.insertAfter(lbl, lnk);
+        equal(S.next(lnk), lbl, 'S.insertAfter(a, b)');
+       
+	});
+    
+    test('cQuery metrics extension', function(){
+		
+        var ctx = $('#metrics'),
+            div = ctx.find('div')[0],
+            p   = ctx.find('p')[0];
+            
+        equal(S.width(p), 1600, 'S.width(elem) unit percent');
+        equal(S.width(div), 300, 'S.width(elem) unit "px"');
+
+        equal(S.height(p), 800, 'S.height(elem) unit percent');
+        equal(S.height(div), 400, 'S.height(elem) unit "px"');
+
+        $('#qunit-fixture')[0].style.cssText = 'top:0;left:0;visibility:hidden';
+        window.scrollTo(50, 50);
+        equal(S.scrollLeft(), 50, 'S.scrollLeft()');
+        equal(S.scrollTop(), 50, 'S.scrollTop()');
+        window.scrollTo(0, 0);
+        $('#qunit-fixture')[0].style.cssText = '';
+
+	});
+    
+    test('cQuery other extension', function(){
+		
+        var formatStr = S.format('$1 + $2 = $3', 1,2,3);
+        equal(formatStr, '1 + 2 = 3', 'S.format(str, arg1, arg2, ...)');
+        
+        var elems = document.getElementsByTagName('div');
+        var type = $.type(S.toArray(elems));
+        equal(type, 'array', 'S.toArray(elems)');
+        (function (){
+            var type = $.type(S.toArray(arguments));
+            equal(type, 'array', 'S.toArray(arguments)');
+        })(1,2,3);
+	});
+	</script>
+</body>
+</html>
